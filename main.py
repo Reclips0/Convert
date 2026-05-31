@@ -21,7 +21,7 @@ class App(ctk.CTk):
 
         # window stuff
         super().__init__()
-        self.geometry("500x300")
+        self.geometry("600x250")
         self.title("OpenMake Convert beta 0.1")
         #self.iconbitmap("./logo.ico")
 
@@ -30,20 +30,20 @@ class App(ctk.CTk):
         self.bind("<Configure>")
 
         # widgets
-        self.button = ctk.CTkButton(self, command=self.choose_file, text="Choose File", width=(width-40), corner_radius=25)
-        self.button.grid(row=0, column=0, padx=20, pady=10, columnspan=3, sticky="ew")
+        self.file = ctk.CTkEntry(self, width=500, placeholder_text="Source File")
+        self.file.grid(row=0, column=0, padx=5, pady=10, columnspan=1, sticky="ew")
 
-        self.label = ctk.CTkLabel(self, text="no file selected")
-        self.label.grid(row=1, column=0, padx=20, pady=10, columnspan=3, sticky="ew")
+        self.button = ctk.CTkButton(self, command=self.choose_file, text="Browse", width=(width-40), corner_radius=25)
+        self.button.grid(row=0, column=1, padx=5, pady=10, columnspan=1, sticky="ew")
 
         self.label_source = ctk.CTkLabel(self, text="source type none")
-        self.label_source.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+        self.label_source.grid(row=2, column=0, padx=5, pady=10, sticky="ew")
 
         self.optionmenu = ctk.CTkOptionMenu(self, values=conversion_types, width=60)
-        self.optionmenu.grid(row=2, column=1, columnspan=2, padx=20, pady=10, sticky="ew")
+        self.optionmenu.grid(row=2, column=1, columnspan=1, padx=5, pady=10, sticky="ew")
 
         self.convert_button = ctk.CTkButton(self, command=self.convert, text="Convert", width=(width-40), corner_radius=25, state="disabled")
-        self.convert_button.grid(row=4, column=0, padx=20, pady=10, columnspan=3, sticky="ew")
+        self.convert_button.grid(row=4, column=0, padx=5, pady=10, columnspan=2, sticky="ew")
 
         # other configuration stuff i don't understand
         self.grid_columnconfigure(0, weight=1)
@@ -70,7 +70,9 @@ class App(ctk.CTk):
             file_name = os.path.basename(file_path)
             name_without_ext, file_extension = os.path.splitext(file_name)
             file_type = file_extension.replace(".", "")
-            self.label.configure(text=f"selected file \n{file_path}")
+            # self.file.configure(textvariable=f"selected file \n{file_path}")
+            self.file.delete(0, "end")
+            self.file.insert(0, file_path)
             self.label_source.configure(text=f"source type .{file_type}")
             print("\nFILE CHOSEN:")
             print(f"path: {file_path}\nname: {file_name}\ntype: {file_type}\n")
