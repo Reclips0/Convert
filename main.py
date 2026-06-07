@@ -177,11 +177,11 @@ class App(ctk.CTk):
         global file_type
         global conversion_types
 
-        if file_type == "mp4" or "mov" or "avi" or "mkv" or "webm":
+        if file_type == "mp4" or file_type == "mov" or file_type == "avi" or file_type == "mkv" or file_type == "webm":
             conversion_types = ["mp4", "mov", "avi", "mkv", "webm"]
-        elif file_type == "jpeg" or "jpg" or "png" or "webp":
+        elif file_type == "jpeg" or file_type == "jpg" or file_type == "png" or file_type == "webp":
             conversion_types = ["jpg", "png", "webp", "gif"]
-        elif file_type == "mp3" or "aac" or "wav" or "flac" or "m4a":
+        elif file_type == "mp3" or file_type == "aac" or file_type == "wav" or file_type == "flac" or file_type == "m4a":
             conversion_types = ["mp3", "aac", "wav", "flac", "m4a"]
 
         self.optionmenu.configure(values=conversion_types)
