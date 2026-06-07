@@ -1,8 +1,13 @@
+from multiprocessing.forkserver import read_signed
+
 import customtkinter as ctk
 import os
 import ffmpeg
 import threading
 from tkinter import filedialog
+import webbrowser
+import pathlib
+from pathlib import Path
 import time
 
 
@@ -48,6 +53,25 @@ class App(ctk.CTk):
         # other configuration stuff i don't understand
         self.grid_columnconfigure(0, weight=1)
 
+    def error(self, message="An unknown error occurred", err_code="9x99"):
+        def open_wiki(page):
+            webbrowser.open(f"https://github.com/Reclips0/Convert/wiki/{page}")
+
+        # Create the popup window
+        popup = ctk.CTkToplevel(self)
+        popup.title("Error")
+        popup.geometry("300x300")
+        popup.attributes("-topmost", True)
+
+        label = ctk.CTkLabel(popup, text=f"Error: {message}")
+        label.pack(pady=20, padx=20)
+        labelb = ctk.CTkLabel(popup, text=f"Function resulted with code {err_code}")
+        labelb.pack(pady=20, padx=20)
+        close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
+        close_button.pack(pady=10)
+        wiki_button = ctk.CTkButton(popup, text="Check wiki for solutions", command=lambda: open_wiki(err_code))
+        wiki_button.pack(pady=10)
+
     def choose_file(self):
         global name_without_ext
         global file_path
@@ -83,23 +107,38 @@ class App(ctk.CTk):
         result_type = self.optionmenu.get()
         print(result_type)
 
-        if result_type != "select resulting file type" or "Choose a file to get options":
+        if result_type != "select resulting file type" and result_type != "Choose a file to get options":
             global file_type
             global file_path
             global file_name
             global name_without_ext
 
-            def ffmpeg_process():
-                (
-                    ffmpeg
-                    .input(file_path)
-                    .output(f"{name_without_ext}.{result_type}")
-                    .run()
-                )
+            if Path(file_path).is_file():
+                print("file exists")
+            else:
+                self.error(message="The file chosen does not exist", err_code="0x10")
+                return
 
-                # WHEN CONVERSION IS DONE
-                popup.destroy()
-                print("Conversion complete!")
+            def ffmpeg_process():
+                try:
+                    (
+                        ffmpeg
+                        .input(file_path)
+                        .output(f"{name_without_ext}.{result_type}")
+                        .run()
+                    )
+
+                    popup.after(0, popup.destroy)
+                    print("Conversion complete!")
+                except ffmpeg.Error:
+                    popup.destroy()
+                    self.error(message="FFmpeg encountered a problem", err_code="1x10")
+                except PermissionError:
+                    popup.destroy()
+                    self.error(message="You do not have permission to execute this file", err_code="0x11")
+                except:
+                    popup.destroy()
+                    self.error(message="An unknown error occurred", err_code="9x99")
 
             conversion_thread = threading.Thread(target=ffmpeg_process)
 
@@ -118,31 +157,23 @@ class App(ctk.CTk):
 
             conversion_thread.start()
         else:
-            # Create the popup window
-            popup = ctk.CTkToplevel(self)
-            popup.title("Error")
-            popup.geometry("300x200")
-            popup.attributes("-topmost", True)
-
-            label = ctk.CTkLabel(popup, text=f"You must select a resulting filetype to convert files")
-            label.pack(pady=20, padx=20)
-            close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
-            close_button.pack(pady=10)
+            self.error(message="You must choose a file type", err_code="3x10")
 
 
-    def available_types(self):
-        global file_type
-        global conversion_types
 
-        if file_type == "mp4" or "mov" or "avi" or "mkv" or "webm":
-            conversion_types = ["mp4", "mov", "avi", "mkv", "webm"]
-        elif file_type == "jpeg" or "jpg" or "png" or "webp":
-            conversion_types = ["jpg", "png", "webp", "gif"]
-        elif file_type == "mp3" or "aac" or "wav" or "flac" or "m4a":
-            conversion_types = ["mp3", "aac", "wav", "flac", "m4a"]
+        def available_types(self):
+            global file_type
+            global conversion_types
 
-        self.optionmenu.configure(values=conversion_types)
-        self.optionmenu.set("select resulting file type")
+            if file_type == "mp4" or "mov" or "avi" or "mkv" or "webm":
+                conversion_types = ["mp4", "mov", "avi", "mkv", "webm"]
+            elif file_type == "jpeg" or "jpg" or "png" or "webp":
+                conversion_types = ["jpg", "png", "webp", "gif"]
+            elif file_type == "mp3" or "aac" or "wav" or "flac" or "m4a":
+                conversion_types = ["mp3", "aac", "wav", "flac", "m4a"]
+
+            self.optionmenu.configure(values=conversion_types)
+            self.optionmenu.set("select resulting file type")
 
 app = App()
 app.mainloop()
