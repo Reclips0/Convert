@@ -128,7 +128,7 @@ class App(ctk.CTk):
             if Path(file_path).is_file():
                 print("file exists")
             else:
-                self.error(message="The file chosen does not exist", err_code="0x10")
+                self.error(message="The file chosen does not exist", err_code="0x20")
                 return
 
             def ffmpeg_process():
@@ -144,13 +144,13 @@ class App(ctk.CTk):
                     print("Conversion complete!")
                 except ffmpeg.Error:
                     popup.destroy()
-                    self.error(message="FFmpeg encountered a problem", err_code="1x10")
+                    self.error(message="FFmpeg encountered a problem", err_code="1x20")
                 except PermissionError:
                     popup.destroy()
-                    self.error(message="You do not have permission to execute this file", err_code="0x11")
+                    self.error(message="You do not have permission to execute this file", err_code="0x21")
                 except:
                     popup.destroy()
-                    self.error(message="An unknown error occurred", err_code="9x99")
+                    self.error(message="An unknown error occurred", err_code="2x21")
 
             conversion_thread = threading.Thread(target=ffmpeg_process)
 
@@ -169,23 +169,23 @@ class App(ctk.CTk):
 
             conversion_thread.start()
         else:
-            self.error(message="You must choose a file type", err_code="2x10")
+            self.error(message="You must choose a result file type", err_code="2x20")
 
 
 
-        def available_types(self):
-            global file_type
-            global conversion_types
+    def available_types(self):
+        global file_type
+        global conversion_types
 
-            if file_type == "mp4" or "mov" or "avi" or "mkv" or "webm":
-                conversion_types = ["mp4", "mov", "avi", "mkv", "webm"]
-            elif file_type == "jpeg" or "jpg" or "png" or "webp":
-                conversion_types = ["jpg", "png", "webp", "gif"]
-            elif file_type == "mp3" or "aac" or "wav" or "flac" or "m4a":
-                conversion_types = ["mp3", "aac", "wav", "flac", "m4a"]
+        if file_type == "mp4" or "mov" or "avi" or "mkv" or "webm":
+            conversion_types = ["mp4", "mov", "avi", "mkv", "webm"]
+        elif file_type == "jpeg" or "jpg" or "png" or "webp":
+            conversion_types = ["jpg", "png", "webp", "gif"]
+        elif file_type == "mp3" or "aac" or "wav" or "flac" or "m4a":
+            conversion_types = ["mp3", "aac", "wav", "flac", "m4a"]
 
-            self.optionmenu.configure(values=conversion_types)
-            self.optionmenu.set("select resulting file type")
+        self.optionmenu.configure(values=conversion_types)
+        self.optionmenu.set("select resulting file type")
 
 app = App()
 app.mainloop()
