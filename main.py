@@ -8,9 +8,21 @@ from tkinter import filedialog
 import webbrowser
 import pathlib
 from pathlib import Path
+import sys
+import subprocess
 import time
 
+def get_ffmpeg_path():
+    """ Resolves the path to the bundled ffmpeg executable. """
+    if getattr(sys, 'frozen', False):
+        # Running as a PyInstaller bundle
+        base_path = sys._MEIPASS
+    else:
+        # Running as a normal Python script
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
+    # Adjust 'ffmpeg.exe' to 'ffmpeg' if targeting Mac/Linux
+    return os.path.join(base_path, 'ffmpeg.exe')
 
 class App(ctk.CTk):
     def __init__(self):
@@ -125,7 +137,7 @@ class App(ctk.CTk):
                         ffmpeg
                         .input(file_path)
                         .output(f"{name_without_ext}.{result_type}")
-                        .run()
+                        .run(cmd=get_ffmpeg_path)
                     )
 
                     popup.after(0, popup.destroy)
@@ -157,7 +169,7 @@ class App(ctk.CTk):
 
             conversion_thread.start()
         else:
-            self.error(message="You must choose a file type", err_code="3x10")
+            self.error(message="You must choose a file type", err_code="2x10")
 
 
 
