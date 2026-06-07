@@ -27,7 +27,7 @@ class App(ctk.CTk):
         # window stuff
         super().__init__()
         self.geometry("600x250")
-        self.title("OpenMake Convert beta 0.1")
+        self.title("OpenMake Convert beta 0.2.0")
         #self.iconbitmap("./logo.ico")
 
         self.update_idletasks()
@@ -52,6 +52,31 @@ class App(ctk.CTk):
 
         # other configuration stuff i don't understand
         self.grid_columnconfigure(0, weight=1)
+
+        # uncomment line below if making a build from a pr or a build before its ready for release
+        # self.build_popup(build_name="test", release="0.2.0")
+
+
+    def build_popup(self, message="You are running an early dev build!", build_name="dev", release="0.2.0"):
+        def open_wiki(page):
+            webbrowser.open(f"https://github.com/Reclips0/Convert/wiki/{page}")
+
+        # Create the popup window
+        popup = ctk.CTkToplevel(self)
+        popup.title("Warning")
+        popup.geometry("300x300")
+        popup.attributes("-topmost", True)
+
+        label = ctk.CTkLabel(popup, text=f"{message}")
+        label.pack(pady=20, padx=20)
+        labelb = ctk.CTkLabel(popup, text=f"You are using {build_name}")
+        labelb.pack(pady=20, padx=20)
+        close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
+        close_button.pack(pady=10)
+        wiki_button = ctk.CTkButton(popup, text="Learn More", command=lambda: open_wiki("dev-builds"))
+        wiki_button.pack(pady=10)
+        patch_button = ctk.CTkButton(popup, text="Read patch notes", command=lambda: webbrowser.open(f"https://github.com/Reclips0/Convert/releases/tag/{release}"))
+        patch_button.pack(pady=10)
 
     def error(self, message="An unknown error occurred", err_code="9x99"):
         def open_wiki(page):
