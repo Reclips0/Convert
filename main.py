@@ -12,18 +12,6 @@ import sys
 import subprocess
 import time
 
-def get_ffmpeg_path():
-    """ Resolves the path to the bundled ffmpeg executable. """
-    if getattr(sys, 'frozen', False):
-        # Running as a PyInstaller bundle
-        base_path = sys._MEIPASS
-    else:
-        # Running as a normal Python script
-        base_path = os.path.dirname(os.path.abspath(__file__))
-
-    # Adjust 'ffmpeg.exe' to 'ffmpeg' if targeting Mac/Linux
-    return os.path.join(base_path, 'ffmpeg.exe')
-
 class App(ctk.CTk):
     def __init__(self):
         global name_without_ext
@@ -137,7 +125,7 @@ class App(ctk.CTk):
                         ffmpeg
                         .input(file_path)
                         .output(f"{name_without_ext}.{result_type}")
-                        .run(cmd=get_ffmpeg_path)
+                        .run()
                     )
 
                     popup.after(0, popup.destroy)
