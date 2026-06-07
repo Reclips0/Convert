@@ -56,6 +56,13 @@ class App(ctk.CTk):
         # uncomment line below if making a build from a pr or a build before its ready for release
         # self.build_popup(build_name="test", release="0.2.0")
 
+    def get_ffmpeg_path(self):
+        if getattr(sys, 'frozen', False):
+            # Running as a PyInstaller bundle
+            base_path = sys._MEIPASS
+        else:
+            # Running as a normal Python script
+            base_path = os.path.dirname(os.path.abspath(__file__))
 
     def build_popup(self, message="You are running an early dev build!", build_name="dev", release="0.2.0"):
         def open_wiki(page):
@@ -150,7 +157,7 @@ class App(ctk.CTk):
                         ffmpeg
                         .input(file_path)
                         .output(f"{name_without_ext}.{result_type}")
-                        .run()
+                        .run(cmd=self.get_ffmpeg_path)
                     )
 
                     popup.after(0, popup.destroy)
